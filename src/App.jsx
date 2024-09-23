@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import delicon from "./assets/delete.png"
+import delicon from "./assets/delete.png";
 import { db } from "./firebase-config";
 import {
   collection,
@@ -10,7 +10,6 @@ import {
   doc,
 } from "firebase/firestore";
 
-
 const App = () => {
   const [users, setUsers] = useState([]);
   const [newName, setNewName] = useState("");
@@ -18,7 +17,10 @@ const App = () => {
   const usersCollection = collection(db, "users");
 
   const createUser = async () => {
-    const docRef = await addDoc(usersCollection, { name: newName, age: Number(newAge) });
+    const docRef = await addDoc(usersCollection, {
+      name: newName,
+      age: Number(newAge),
+    });
     setUsers([...users, { id: docRef.id, name: newName, age: Number(newAge) }]);
   };
   const deleteUser = async (id) => {
@@ -31,7 +33,9 @@ const App = () => {
     const userDoc = doc(db, "users", id);
     const newFields = { age: age + 1 };
     await updateDoc(userDoc, newFields);
-    setUsers(users.map((user) => (user.id === id ? { ...user, age: age + 1 } : user)));
+    setUsers(
+      users.map((user) => (user.id === id ? { ...user, age: age + 1 } : user))
+    );
   };
 
   useEffect(() => {
@@ -40,52 +44,68 @@ const App = () => {
       setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
 
-
-    
     getUsers();
   }, []);
   return (
-    <div className="w-full flex gap-2">
-      <div className="w-1/2 flex flex-col h-screen gap-6 justify-center items-center">
+    <div className="w-full flex gap-2 bg-custom-card-background h-auto">
+      <div className="w-1/2 flex flex-col gap-6 justify-center items-center h-screen overflow-y-hidden">
         {" "}
-        <input
-          type="text"
-          placeholder="Name..."
-          onChange={(e) => setNewName(e.target.value)}
-          className="border border-black w-[300px] h-[34px] p-3 rounded-md"
-        />
-        <input
-          type="number"
-          placeholder="Age..."
-          onChange={(e) => setNewAge(e.target.value)}
-           className="border border-black w-[300px] h-[34px] p-3 rounded-md"
-        />
-        <button onClick={createUser} className="border w-[100px] py-1 bg-blue-500 text-white text-xl rounded-lg">Create</button>
+
+        <h1 className="uppercase font-semibold text-3xl absolute top-16">Welcome back...</h1>
+        <div className="flex flex-col w-[350px] justify-center items-center gap-4 shadow-2xl bg-[#f1dede] p-4 rounded-2xl py-12">
+          {" "}
+       
+          <input
+            type="text"
+            placeholder="Name..."
+            onChange={(e) => setNewName(e.target.value)}
+            className="border p-3 rounded-lg w-full"
+          />
+          <input
+            type="number"
+            placeholder="Age..."
+            onChange={(e) => setNewAge(e.target.value)}
+            className="border p-3 rounded-lg w-full"
+          />
+          <button
+            onClick={createUser}
+            className="border w-1/2 py-1  bg-blue-800 text-white text-lg rounded-2xl"
+          >
+            Create
+          </button>
+        </div>{" "}
       </div>
-      <div className="w-1/2 bg-blue-300 p-8 grid grid-cols-3">
+      <div className="bg-black border border-black my-12"></div>
+      <div className="w-1/2 p-12 grid grid-cols-3 gap-6 h-full">
         {users.map((user) => {
           return (
-            <div className=" rounded-lg shadow-xl w-[200px] h-[160px] p-6 relative font-semibold flex flex-col gap-4 justify-center items-center">
-              
-             <div className="flex"><p className="text-lg absolute left-3 top-8">Name : </p> <p className="absolute left-20 top-9">{user.name}</p></div> 
-              <div className="flex"><p className="text-lg absolute left-3 top-16">Age :</p><p className="absolute left-20 top-16">{user.age}</p></div>
-             <div className="">
-               <button 
-             className="border px-3 rounded-lg bg-green-400 text-sm absolute bottom-6 right-5 hover:bg-green-800 hover:text-white"
-                onClick={() => {
-                  updateUser(user.id, user.age);
-                }}
-              >
-                Increase Age
-              </button>
-              <button
-              className="absolute top-1 right-1"
-                onClick={() => {
-                  deleteUser(user.id);
-                }}
-              >
-                <img src={delicon} alt="" className="w-[17px] h-[17px]" />
-              </button></div>
+            <div className=" rounded-lg shadow-xl w-full h-[150px] relative font-semibold flex flex-col justify-center bg-custom-gradient p-4">
+              <div className="flex justify-start items-center gap-2">
+                <p className="text-lg font-bold">Name : </p>{" "}
+                <p className="text-lg">{user.name}</p>
+              </div>
+              <div className="flex justify-start items-center gap-2">
+                <p className="text-lg font-bold">Age :</p>
+                <p className="text-lg">{user.age}</p>
+              </div>
+              <div className="">
+                <button
+                  className="p-1 px-3 rounded-full bg-green-400 text-sm absolute font-semibold bottom-2 right-3 hover:bg-green-800 hover:text-white"
+                  onClick={() => {
+                    updateUser(user.id, user.age);
+                  }}
+                >
+                  Increase Age
+                </button>
+                <button
+                  className="absolute top-2 right-2"
+                  onClick={() => {
+                    deleteUser(user.id);
+                  }}
+                >
+                  <img src={delicon} alt="" className="w-[17px] h-[17px]" />
+                </button>
+              </div>
             </div>
           );
         })}
